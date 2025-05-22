@@ -41,6 +41,7 @@ public class DiscordBot extends ListenerAdapter {
 				scheduler.reSchedule(timer, repo);
 			}
 			// タイマー再起動後にいらないタイマーのデリート処理を入れたい
+			System.out.println("タイマーデリート処理");
 
 			// 参加しているサーバーを ID から取得
 			Guild guild = jda.getGuildById(PropertyManager.getProperties(BotConnectionPropertyKey.GUILD_ID.getKey()));
