@@ -76,7 +76,9 @@ public class DiscordBot extends ListenerAdapter {
 			cnt++;
 		}
 		System.out.println("削除対象タイマー:" + cnt + "件削除済み");
-		guild.getTextChannelById(PropertyManager.getProperties(BotConnectionPropertyKey.BLACKDESERT_CHANNEL_ID.getKey()))
-				.sendMessage("再起動等と被ってしまい実行されず削除されたタイマーが" + cnt + "件あります。").queue();
+		if (cnt != 0) {
+			guild.getTextChannelById(PropertyManager.getProperties(BotConnectionPropertyKey.MAIN_CHANNEL_ID.getKey()))
+					.sendMessage("再起動等と被ってしまい実行されず削除されたタイマーが" + cnt + "件あります。").queue();
+		}
 	}
 }
