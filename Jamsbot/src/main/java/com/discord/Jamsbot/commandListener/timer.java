@@ -18,7 +18,7 @@ public class timer extends commandListenerAbstract {
 	}
 
 	@Override
-	protected void commandInteracton(SlashCommandInteractionEvent event) {
+	public void execute() {
 		String sub = event.getSubcommandName();
 		switch (sub) {
 		case "timer" -> handleTimer(event);
@@ -68,7 +68,7 @@ public class timer extends commandListenerAbstract {
 				event.reply("⚠️ 過去の時間は指定できません！").setEphemeral(true).queue();
 				return;
 			}
-			
+
 			TimerRepository repo = new TimerRepository();
 			long id = repo.save(event.getUser().getId(), event.getChannel().getId(), dateTime);
 			event.reply("⏰ アラームをセットしました！").setEphemeral(true).queue();
@@ -96,4 +96,5 @@ public class timer extends commandListenerAbstract {
 
 		return defaultValue;
 	}
+
 }

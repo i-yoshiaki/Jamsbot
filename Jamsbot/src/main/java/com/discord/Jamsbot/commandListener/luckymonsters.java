@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -19,7 +18,7 @@ public class luckymonsters extends commandListenerAbstract {
 	}
 	
 	@Override
-	public void commandInteracton(@NotNull SlashCommandInteractionEvent event) {
+	public void execute() {
 		event.reply("処理中...").setEphemeral(true).queue(
 				response ->{
 					List<String> urlList = new ArrayList<String>();
