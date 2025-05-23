@@ -35,6 +35,8 @@ public class CommandAutoRegister {
 												new OptionData(OptionType.INTEGER, "seconds", "秒 (0-59)", false).setMinValue(0).setMaxValue(59)
 
 										)),
+				// gemini
+				Commands.slash("gemini", "geminiに質問できます。").addOption(OptionType.STRING, "text", "質問内容", true),
 
 				// admin
 				Commands.slash("admin", "管理者向けコマンド")
