@@ -9,7 +9,7 @@ public class ping extends commandListenerAbstract {
 	}
 
 	@Override
-	protected void commandInteracton(SlashCommandInteractionEvent event) {
+	public void execute() {
 		long timeBefore = System.currentTimeMillis();
 		event.reply("🏓 Pong!").queue(response -> {
 			long latency = System.currentTimeMillis() - timeBefore;
