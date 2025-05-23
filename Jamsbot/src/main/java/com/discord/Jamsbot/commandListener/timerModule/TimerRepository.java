@@ -29,7 +29,7 @@ public class TimerRepository {
 			try (ResultSet rs = stmt.getGeneratedKeys()) {
 				if (rs.next())
 					System.out.println(rs.getLong(1));
-					return rs.getLong(1);
+				return rs.getLong(1);
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
@@ -53,6 +53,23 @@ public class TimerRepository {
 				list.add(data);
 			}
 		} catch (SQLException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	public List<Long> findExpiredItems() {
+		List<Long> list = new ArrayList<>();
+		String sql = "SELECT * FROM timers WHERE trigger_time < NOW()";
+		JDBCConnector connector = new JDBCConnector();
+		try (Connection conn = connector.connect(PropertyManager.getProperties(TimerDbPropertyKey.TIMER_DB_NAME.getKey()));
+				PreparedStatement stmt = conn.prepareStatement(sql);
+				ResultSet rs = stmt.executeQuery()) {
+			while (rs.next()) {
+				long data = rs.getLong("id");
+				list.add(data);
+			}
+		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
 		return list;
