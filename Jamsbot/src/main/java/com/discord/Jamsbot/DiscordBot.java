@@ -23,7 +23,7 @@ public class DiscordBot extends ListenerAdapter {
 			JDA jda = JDABuilder
 					.createLight(PropertyManager.getProperties(BotConnectionPropertyKey.TOKEN.getKey()), GatewayIntent.GUILD_MESSAGES,
 							GatewayIntent.DIRECT_MESSAGES)
-					.addEventListeners(new SlashCommandListener())
+					.addEventListeners(new SlashCommandListener(),new ButtonListener())
 					.setActivity(Activity.customStatus("コマンドは[/]を入力")) // "～をプレイ中" の ～の部分
 					.build();
 
