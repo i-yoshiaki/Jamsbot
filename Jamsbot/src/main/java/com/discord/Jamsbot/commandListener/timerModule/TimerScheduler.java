@@ -23,7 +23,7 @@ public class TimerScheduler {
 		executor.schedule(() -> {
 			jda.retrieveUserById(timer.userId()).queue(user -> {
 				user.openPrivateChannel()
-						.flatMap(channel -> channel.sendMessage("<@" + timer.userId() + "> タイマーの時間になりました！"))
+						.flatMap(channel -> channel.sendMessage("<@" + timer.userId() + "> ⌛️タイマーの時間になりました！"))
 						.queue(
 								success -> System.out.println("DM送信成功"),
 								failure -> System.err.println("DM送信失敗: " + failure.getMessage()));

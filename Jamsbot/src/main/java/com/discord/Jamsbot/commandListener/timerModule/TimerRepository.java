@@ -16,7 +16,7 @@ import util.PropertyManager;
 
 public class TimerRepository {
 
-	public long save(String userId, String channelId, LocalDateTime triggerTime) {
+	public TimerData save(String userId, String channelId, LocalDateTime triggerTime) {
 		String sql = "INSERT INTO timers (user_id, channel_id, trigger_time) VALUES (?, ?, ?)";
 		JDBCConnector connector = new JDBCConnector();
 		try (Connection conn = connector.connect(PropertyManager.getProperties(TimerDbPropertyKey.TIMER_DB_NAME.getKey()));
@@ -29,12 +29,19 @@ public class TimerRepository {
 			try (ResultSet rs = stmt.getGeneratedKeys()) {
 				if (rs.next())
 					System.out.println(rs.getLong(1));
-				return rs.getLong(1);
+
+				TimerData data = new TimerData(
+						rs.getLong(1),
+						userId,
+						channelId,
+						triggerTime);
+
+				return data;
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		return -1;
+		return null;
 	}
 
 	public List<TimerData> findAllUpcoming() {

@@ -4,10 +4,10 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.Timer;
-import java.util.TimerTask;
 
+import com.discord.Jamsbot.commandListener.timerModule.TimerData;
 import com.discord.Jamsbot.commandListener.timerModule.TimerRepository;
+import com.discord.Jamsbot.commandListener.timerModule.TimerScheduler;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -39,18 +39,13 @@ public class timer extends commandListenerAbstract {
 		//DBにセーブしとく
 		LocalDateTime triggerAt = LocalDateTime.now().plus(Duration.ofMillis(delayMillis));
 		TimerRepository repo = new TimerRepository();
-		long id = repo.save(event.getUser().getId(), event.getChannel().getId(), triggerAt);
+		TimerData data = repo.save(event.getUser().getId(), event.getChannel().getId(), triggerAt);
 
 		event.reply("⏱ タイマーをセットしました！").setEphemeral(true).queue();
 
-		Timer timer = new Timer();
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				event.getHook().sendMessage("⏰ タイマーが終了しました！").setEphemeral(true).queue();
-				repo.delete(id);
-			}
-		}, delayMillis);
+		TimerScheduler timerScheduler = new TimerScheduler(event.getJDA());
+		timerScheduler.reSchedule(data, repo);
+		System.out.println("タイマー起動" + data.id());
 	}
 
 	private void handleAlarm(SlashCommandInteractionEvent event) {
@@ -70,17 +65,12 @@ public class timer extends commandListenerAbstract {
 			}
 
 			TimerRepository repo = new TimerRepository();
-			long id = repo.save(event.getUser().getId(), event.getChannel().getId(), dateTime);
+			TimerData data = repo.save(event.getUser().getId(), event.getChannel().getId(), dateTime);
 			event.reply("⏰ アラームをセットしました！").setEphemeral(true).queue();
 
-			Timer timer = new Timer();
-			timer.schedule(new TimerTask() {
-				@Override
-				public void run() {
-					event.getHook().sendMessage("🔔 アラームの時間になりました！").setEphemeral(true).queue();
-					repo.delete(id);
-				}
-			}, delayMillis);
+			TimerScheduler timerScheduler = new TimerScheduler(event.getJDA());
+			timerScheduler.reSchedule(data, repo);
+			System.out.println("タイマー起動" + data.id());
 
 		} catch (DateTimeParseException e) {
 			event.reply("📅 日付の形式が正しくありません（例: 2001-03-14）").setEphemeral(true).queue();
