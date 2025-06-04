@@ -16,11 +16,11 @@ public class luckymonsters extends commandListenerAbstract {
 	public luckymonsters(SlashCommandInteractionEvent e) {
 		super(e);
 	}
-	
+
 	@Override
 	public void execute() {
 		event.reply("処理中...").setEphemeral(true).queue(
-				response ->{
+				response -> {
 					List<String> urlList = new ArrayList<String>();
 					try {
 						Document doc = Jsoup.connect("https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/148271").get();
@@ -29,8 +29,8 @@ public class luckymonsters extends commandListenerAbstract {
 						List<String> elList = new ArrayList<String>();
 						// Loop through img tags
 						for (Element el : img) {
-							if (el.attr("alt").equals("ラキモン") || el.attr("alt").contains("からのラキモン")) {
-								elList.add(el.attr("src"));
+							if (el.attr("class").contains("js-img-preview c-progressive-img") && !el.attr("alt").equals("ラキモン運極時の使用効果が追加")) {
+								elList.add(el.attr("data-original"));
 							}
 						}
 						// 重複削除
@@ -49,9 +49,9 @@ public class luckymonsters extends commandListenerAbstract {
 						// 処理中を編集して出力
 						event.getHook().editOriginal(urlList.get(0) + "\n" + urlList.get(1)).queue();
 					} catch (Exception e) {
-						event.reply("URLが取得できませんでした。").setEphemeral(true).queue();
+						event.getHook().editOriginal("URLが取得できませんでした。").queue();
 						e.printStackTrace();
 					}
 				});
 	}
-}	
+}
