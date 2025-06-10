@@ -40,7 +40,7 @@ public class DiscordBot extends ListenerAdapter {
 
 			// 登録するコマンドを作成
 			// コマンドを指定したサーバーに登録
-			CommandAutoRegister.registerCommands(guild);
+			CommandAutoRegister.registerCommands(jda);
 
 			// 定期実行
 			DiscordBot app = new DiscordBot();
