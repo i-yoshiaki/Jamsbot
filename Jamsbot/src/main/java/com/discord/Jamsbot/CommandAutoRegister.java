@@ -71,8 +71,8 @@ public class CommandAutoRegister {
 		jda.updateCommands().addCommands(commandList).queue();
 
 		// ギルド限定登録（即時反映）
-		if (guild != null) {
-			guild.updateCommands().addCommands(commandList).queue();
-		}
+		//		if (guild != null) {
+		//			guild.updateCommands().addCommands(commandList).queue();
+		//		}
 	}
 }
