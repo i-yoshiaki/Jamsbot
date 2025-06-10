@@ -2,15 +2,12 @@ package com.discord.Jamsbot;
 
 import java.util.List;
 
-import constants.BotConnectionPropertyKey;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import util.PropertyManager;
 
 public class CommandAutoRegister {
 
@@ -57,15 +54,15 @@ public class CommandAutoRegister {
 						.setGuildOnly(true));
 
 		//グローバルコマンド初期化
-		jda.updateCommands().queue(
-				success -> System.out.println("グローバルコマンドの削除が完了しました。"),
-				error -> System.err.println("グローバルコマンドの削除中にエラーが発生しました: " + error.getMessage()));
-
-		//ギルドコマンド初期化
-		Guild guild = jda.getGuildById(PropertyManager.getProperties(BotConnectionPropertyKey.GUILD_ID.getKey()));
-		guild.updateCommands().queue(
-				success -> System.out.println(guild.getName() + " のギルドコマンドの削除が完了しました。"),
-				error -> System.err.println(guild.getName() + " のギルドコマンドの削除中にエラーが発生しました: " + error.getMessage()));
+		//		jda.updateCommands().queue(
+		//				success -> System.out.println("グローバルコマンドの削除が完了しました。"),
+		//				error -> System.err.println("グローバルコマンドの削除中にエラーが発生しました: " + error.getMessage()));
+		//
+		//		//ギルドコマンド初期化
+		//		Guild guild = jda.getGuildById(PropertyManager.getProperties(BotConnectionPropertyKey.GUILD_ID.getKey()));
+		//		guild.updateCommands().queue(
+		//				success -> System.out.println(guild.getName() + " のギルドコマンドの削除が完了しました。"),
+		//				error -> System.err.println(guild.getName() + " のギルドコマンドの削除中にエラーが発生しました: " + error.getMessage()));
 
 		//		 グローバルコマンドとして登録（反映に最大1時間かかる）
 		jda.updateCommands().addCommands(commandList).queue();
