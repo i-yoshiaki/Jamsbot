@@ -55,9 +55,7 @@ public class CommandAutoRegister {
 										.addOption(OptionType.USER, "target", "対象のユーザー", true),
 								new SubcommandData("kick", "ユーザーをキック")
 										.addOption(OptionType.USER, "target", "対象のユーザー", true))
-						.setGuildOnly(true));
-
-		List<SlashCommandData> privateCommandList = List.of(
+						.setGuildOnly(true),
 
 				//server
 				Commands.slash("server", "サーバースタート")
@@ -69,6 +67,10 @@ public class CommandAutoRegister {
 										.addSubcommands(
 												new SubcommandData("minecraft", "Minecraftサーバー")))
 						.setGuildOnly(true));
+
+		List<SlashCommandData> privateCommandList = List.of(
+
+		);
 
 		//グローバルコマンド初期化
 		//		jda.updateCommands().queue(
