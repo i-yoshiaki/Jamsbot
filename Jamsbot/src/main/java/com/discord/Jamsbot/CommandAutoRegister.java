@@ -58,7 +58,7 @@ public class CommandAutoRegister {
 						.setGuildOnly(true),
 
 				//server
-				Commands.slash("server", "サーバースタート")
+				Commands.slash("server", "サーバーコマンド")
 						.addSubcommandGroups(
 								new SubcommandGroupData("start", "サーバーを起動します。")
 										.addSubcommands(
@@ -66,6 +66,13 @@ public class CommandAutoRegister {
 								new SubcommandGroupData("stop", "サーバーを停止します。")
 										.addSubcommands(
 												new SubcommandData("minecraft", "Minecraftサーバー")))
+						.setGuildOnly(true),
+
+				//blackdeserttask
+				Commands.slash("blackdeserttask", "黒い砂漠の定期通知on/off")
+						.addSubcommands(
+								new SubcommandData("on", "定期通知をonにする"),
+								new SubcommandData("off", "定期通知をoffにする"))
 						.setGuildOnly(true));
 
 		List<SlashCommandData> privateCommandList = List.of(

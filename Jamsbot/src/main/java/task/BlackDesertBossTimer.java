@@ -46,6 +46,8 @@ public class BlackDesertBossTimer implements Runnable {
 		eb.setThumbnail("https://stickershop.line-scdn.net/stickershop/v1/product/22602169/LINEStorePC/main.png");
 		eb.setFooter("Made by Jam");
 
+		List<String> userList = new ArrayList<>();
+
 		//db用変数初期化
 		Connection con = null;
 		PreparedStatement pstmt = null;
@@ -82,10 +84,62 @@ public class BlackDesertBossTimer implements Runnable {
 				System.out.println("ボスがない時間です。(" + nowDatePlasTenMinutes.toString() + ")");
 				return;
 			}
+
+			//送信先を確認する！！！！！
+			if (rs != null)
+				rs.close();
+			if (pstmt != null)
+				pstmt.close();
+
+			// 2つ目のSQL実行
+			PreparedStatement pstmt2 = null; // 新しいPreparedStatementを宣言
+			ResultSet rs2 = null; // 新しいResultSetを宣言
+
+			try {
+				pstmt2 = con.prepareStatement("SELECT * FROM discord_user WHERE flag = ?;"); // 例: 別のテーブル
+				pstmt2.setString(1, "1");
+				rs2 = pstmt2.executeQuery();
+
+				while (rs2.next()) {
+					System.out.println(rs2.getString("user_id"));
+					userList.add(rs2.getString("user_id"));
+				}
+
+			} finally {
+				// 2つ目のPreparedStatementとResultSetもfinallyブロックで閉じる
+				if (rs2 != null) {
+					try {
+						rs2.close();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+				if (pstmt2 != null) {
+					try {
+						pstmt2.close();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
 			//メインチャンネルに送信
-			guild.getTextChannelById(CHANNEL_ID).sendMessageEmbeds(eb.build()).queue();
+			//			guild.getTextChannelById(CHANNEL_ID).sendMessageEmbeds(eb.build()).queue();
+			for (String u : userList) {
+				guild.retrieveMemberById(u).queue(
+						member -> {
+							member.getUser().openPrivateChannel()
+									.flatMap(channel -> channel.sendMessageEmbeds(eb.build()))
+									.queue();
+						},
+						failure -> {
+							System.err.println("ユーザー取得失敗: " + failure.getMessage());
+						});
+			}
+
 		} catch (Exception e) {
-			guild.getTextChannelById(PropertyManager.getProperties(BotConnectionPropertyKey.ADMIN_CHANNEL_ID.getKey())).sendMessage("【定期実行】黒い砂漠:SQL実行できませんでした。")
+			guild.getTextChannelById(PropertyManager.getProperties(BotConnectionPropertyKey.ADMIN_CHANNEL_ID.getKey()))
+					.sendMessage("【定期実行】黒い砂漠:SQL実行できませんでした。")
 					.queue();
 			e.printStackTrace();
 		}
@@ -114,4 +168,5 @@ public class BlackDesertBossTimer implements Runnable {
 			}
 		}
 	}
+
 }
