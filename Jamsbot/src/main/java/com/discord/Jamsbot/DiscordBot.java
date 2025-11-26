@@ -23,7 +23,7 @@ public class DiscordBot extends ListenerAdapter {
 			JDA jda = JDABuilder
 					.createLight(PropertyManager.getProperties(BotConnectionPropertyKey.TOKEN.getKey()), GatewayIntent.GUILD_MESSAGES,
 							GatewayIntent.DIRECT_MESSAGES)
-					.addEventListeners(new SlashCommandListener(),new ButtonListener())
+					.addEventListeners(new SlashCommandListener(), new ButtonListener())
 					.setActivity(Activity.customStatus("コマンドは[/]を入力")) // "～をプレイ中" の ～の部分
 					.build();
 
@@ -56,7 +56,7 @@ public class DiscordBot extends ListenerAdapter {
 		// 定期実行スケジュール
 		scheduler.schedule("0 0 10 * *|0 0 20 * *|0 0 30 * *|0 0 L 2 *",
 				new task.MonsterStrikeDays(guild, PropertyManager.getProperties(BotConnectionPropertyKey.MONSTERSTRIKE_CHANNEL_ID.getKey())));
-		scheduler.schedule("20 1 * * *|50 10 * * *|50 13 * * *|50 15 * * *|50 18 * * *|20 22 * * *|50 22 * * *",
+		scheduler.schedule("20 * * * *|50 * * * *",
 				new task.BlackDesertBossTimer(guild, PropertyManager.getProperties(BotConnectionPropertyKey.BLACKDESERT_CHANNEL_ID.getKey())));
 		// start cron4j scheduler.
 		scheduler.start();

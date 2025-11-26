@@ -39,7 +39,7 @@ public class worldbosstoday extends buttonListenerAbstract {
 				+ " inner join boss on timetable.boss_id = boss.id\n"
 				+ " inner join boss_time on timetable.boss_time_id = boss_time.id\n"
 				+ " where boss_time.day_of_week_char = ? \n"
-				+ " order by timetable.id;";
+				+ " order by boss_time.time;";
 		//接続
 		JDBCConnector connector = new JDBCConnector();
 		//結果用List
@@ -93,7 +93,7 @@ public class worldbosstoday extends buttonListenerAbstract {
 			}
 
 			//フィールドを追加
-			eb.addField(rsTimeList.get(currentBlockValue)+"時", s, false);
+			eb.addField(rsTimeList.get(currentBlockValue), s, false);
 			// 次の塊の開始位置にインデックスを進める
 			i = j;
 		}

@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,10 +33,14 @@ public class BlackDesertBossTimer implements Runnable {
 		LocalDateTime nowDatePlasTenMinutes = LocalDateTime.now().plusMinutes(10);
 		//LIstの場合-1なので-1する。
 		int dayOfWeek = nowDatePlasTenMinutes.getDayOfWeek().getValue() - 1;
-		int hour = nowDatePlasTenMinutes.getHour();
+		//24時間表示(時時分分)。
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HHmm");
+		//フォーマッターを使いながら時間の誤差5分を表現
+		String hourPlusFive = nowDatePlasTenMinutes.plusMinutes(5).format(formatter);
+		String hourMinusFive = nowDatePlasTenMinutes.minusMinutes(5).format(formatter);
 		//曜日文字列に変換用リスト
 		List<String> dayOfWeekList = new ArrayList<>(Arrays.asList("月", "火", "水", "木", "金", "土", "日"));
-		System.out.println("dayOfWeek:" + dayOfWeekList.get(dayOfWeek) + "\nhour:" + hour);
+		System.out.println("dayOfWeek:" + dayOfWeekList.get(dayOfWeek) + "\nhour:" + hourPlusFive);
 
 		// Embed作成
 		EmbedBuilder eb = new EmbedBuilder();
@@ -61,10 +66,12 @@ public class BlackDesertBossTimer implements Runnable {
 					+ " from timetable\n"
 					+ " inner join boss on timetable.boss_id = boss.id\n"
 					+ " inner join boss_time on timetable.boss_time_id = boss_time.id\n"
-					+ " where boss_time.day_of_week_char = ? and boss_time.time = ?\n"
+					+ " where boss_time.day_of_week_char = ? \n"
+					+ " and boss_time.time between ? and ?\n"
 					+ " order by timetable.id;");
 			pstmt.setString(1, dayOfWeekList.get(dayOfWeek));
-			pstmt.setString(2, String.format("%02d", hour));
+			pstmt.setString(2, hourMinusFive);
+			pstmt.setString(3, hourPlusFive);
 
 			//SQL結果をResultSetに格納
 			rs = pstmt.executeQuery();
