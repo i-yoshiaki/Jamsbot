@@ -75,6 +75,7 @@ public class DiscordBot extends ListenerAdapter {
 			repo.delete(id);
 			cnt++;
 		}
+		
 		System.out.println("削除対象タイマー:" + cnt + "件削除済み");
 		if (cnt != 0) {
 			guild.getTextChannelById(PropertyManager.getProperties(BotConnectionPropertyKey.MAIN_CHANNEL_ID.getKey()))
