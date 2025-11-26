@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import constants.BlackDesertBossTimerDbPropertyKey;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import util.JDBCConnector;
 import util.PropertyManager;
 
@@ -25,12 +26,23 @@ public class blackdeserttask extends commandListenerAbstract {
 
 	private void taskOn(SlashCommandInteractionEvent event) {
 		event.reply("黒い砂漠の定期通知をオンにします").setEphemeral(true).queue();
-		String sql = "INSERT INTO discord_user (user_id, flag) VALUES (?, ?) ON DUPLICATE KEY UPDATE flag = VALUES(flag);";
+		OptionMapping isEvent = event.getOption("is_event");
+		boolean isEventValue = false;
+		if(isEvent != null) {
+			isEventValue = isEvent.getAsBoolean();
+		}
+		
+		String sql = "INSERT INTO discord_user (user_id, flag, is_event)\n"
+				+ "VALUES (?, ?, ?)\n"
+				+ "ON DUPLICATE KEY UPDATE\n"
+				+ "    flag = VALUES(flag),\n"
+				+ "    is_event = VALUES(is_event);";
 		JDBCConnector connector = new JDBCConnector();
 		try (Connection conn = connector.connect(PropertyManager.getProperties(BlackDesertBossTimerDbPropertyKey.BLACKDESERT_DB_NAME.getKey()));
 				PreparedStatement stmt = conn.prepareStatement(sql);) {
 			stmt.setString(1, event.getUser().getId());
 			stmt.setBoolean(2, true);
+			stmt.setBoolean(3, isEventValue);
 			stmt.executeUpdate();
 
 		} catch (SQLException e) {
@@ -45,12 +57,17 @@ public class blackdeserttask extends commandListenerAbstract {
 
 	private void taskOff(SlashCommandInteractionEvent event) {
 		event.reply("黒い砂漠の定期通知をオフにします").setEphemeral(true).queue();
-		String sql = "INSERT INTO discord_user (user_id, flag) VALUES (?, ?) ON DUPLICATE KEY UPDATE flag = VALUES(flag);";
+		String sql = "INSERT INTO discord_user (user_id, flag, is_event)\n"
+				+ "VALUES (?, ?, ?)\n"
+				+ "ON DUPLICATE KEY UPDATE\n"
+				+ "    flag = VALUES(flag),\n"
+				+ "    is_event = VALUES(is_event);";
 		JDBCConnector connector = new JDBCConnector();
 		try (Connection conn = connector.connect(PropertyManager.getProperties(BlackDesertBossTimerDbPropertyKey.BLACKDESERT_DB_NAME.getKey()));
 				PreparedStatement stmt = conn.prepareStatement(sql);) {
 			stmt.setString(1, event.getUser().getId());
 			stmt.setBoolean(2, false);
+			stmt.setBoolean(3, false);
 			stmt.executeUpdate();
 
 		} catch (SQLException e) {

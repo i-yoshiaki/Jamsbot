@@ -38,7 +38,8 @@ public class worldbosstoday extends buttonListenerAbstract {
 				+ " from timetable\n"
 				+ " inner join boss on timetable.boss_id = boss.id\n"
 				+ " inner join boss_time on timetable.boss_time_id = boss_time.id\n"
-				+ " where boss_time.day_of_week_char = ? \n"
+				+ " where boss.is_deleted = false \n"
+				+ " and boss_time.day_of_week_char = ? \n"
 				+ " order by boss_time.time;";
 		//接続
 		JDBCConnector connector = new JDBCConnector();

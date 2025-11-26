@@ -71,7 +71,8 @@ public class CommandAutoRegister {
 				//blackdeserttask
 				Commands.slash("blackdeserttask", "黒い砂漠の定期通知on/off")
 						.addSubcommands(
-								new SubcommandData("on", "定期通知をonにする"),
+								new SubcommandData("on", "定期通知をonにする")
+									.addOption(OptionType.BOOLEAN, "is_event","イベントボスのみ",false),
 								new SubcommandData("off", "定期通知をoffにする"))
 						.setGuildOnly(true));
 

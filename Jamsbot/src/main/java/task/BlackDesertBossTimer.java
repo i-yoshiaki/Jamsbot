@@ -62,11 +62,12 @@ public class BlackDesertBossTimer implements Runnable {
 		try {
 			JDBCConnector connector = new JDBCConnector();
 			con = connector.connect(PropertyManager.getProperties(BlackDesertBossTimerDbPropertyKey.BLACKDESERT_DB_NAME.getKey()));
-			pstmt = con.prepareStatement(" select timetable.id,boss_time.day_of_week_char,boss_time.time,boss.name\n"
+			pstmt = con.prepareStatement(" select timetable.id,boss_time.day_of_week_char,boss_time.time,boss.name,boss.is_event_boss\n"
 					+ " from timetable\n"
 					+ " inner join boss on timetable.boss_id = boss.id\n"
 					+ " inner join boss_time on timetable.boss_time_id = boss_time.id\n"
-					+ " where boss_time.day_of_week_char = ? \n"
+					+ " where boss.is_deleted = false \n"
+					+ " and boss_time.day_of_week_char = ? \n"
 					+ " and boss_time.time between ? and ?\n"
 					+ " order by timetable.id;");
 			pstmt.setString(1, dayOfWeekList.get(dayOfWeek));
@@ -78,11 +79,14 @@ public class BlackDesertBossTimer implements Runnable {
 
 			//結果格納用List
 			List<String> rsList = new ArrayList<>();
+			List<Boolean> isEventList = new ArrayList<>();
 			//結果をEmbedに追加してListにも追加しとく
 			while (rs.next()) {
 				System.out.println(rs.getString("boss.name"));
 				eb.addField(rs.getString("boss.name"), "", true);
 				rsList.add(rs.getString("boss.name"));
+				//イベントボスかを確認する。
+				isEventList.add(rs.getBoolean("boss.is_event_boss"));
 			}
 
 			System.out.println(rsList.size());
@@ -91,6 +95,13 @@ public class BlackDesertBossTimer implements Runnable {
 				System.out.println("ボスがない時間です。(" + nowDatePlasTenMinutes.toString() + ")");
 				return;
 			}
+			
+			//イベントボスフラグ
+			//データベースから取ってきたリストにtrueが含まれてたらtrueを返す
+			boolean isEventBoss = isEventList.stream().anyMatch(b -> b);
+			
+			//イベントボス通知受け取りユーザーリスト
+			List<Boolean> isEventBossUser = new ArrayList<>();
 
 			//送信先を確認する！！！！！
 			if (rs != null)
@@ -110,6 +121,7 @@ public class BlackDesertBossTimer implements Runnable {
 				while (rs2.next()) {
 					System.out.println(rs2.getString("user_id"));
 					userList.add(rs2.getString("user_id"));
+					isEventBossUser.add(rs2.getBoolean("is_event"));
 				}
 
 			} finally {
@@ -132,7 +144,12 @@ public class BlackDesertBossTimer implements Runnable {
 
 			//メインチャンネルに送信
 			//			guild.getTextChannelById(CHANNEL_ID).sendMessageEmbeds(eb.build()).queue();
+			int i = 0;
 			for (String u : userList) {
+				if(!isEventBoss && isEventBossUser.get(i)) {
+					i++;
+					continue;
+				}
 				guild.retrieveMemberById(u).queue(
 						member -> {
 							member.getUser().openPrivateChannel()
@@ -142,6 +159,7 @@ public class BlackDesertBossTimer implements Runnable {
 						failure -> {
 							System.err.println("ユーザー取得失敗: " + failure.getMessage());
 						});
+				i ++;
 			}
 
 		} catch (Exception e) {
