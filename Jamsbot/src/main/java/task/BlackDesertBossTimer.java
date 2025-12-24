@@ -35,9 +35,9 @@ public class BlackDesertBossTimer implements Runnable {
 		int dayOfWeek = nowDatePlasTenMinutes.getDayOfWeek().getValue() - 1;
 		//24時間表示(時時分分)。
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HHmm");
-		//フォーマッターを使いながら時間の誤差5分を表現
-		String hourPlusFive = nowDatePlasTenMinutes.plusMinutes(5).format(formatter);
-		String hourMinusFive = nowDatePlasTenMinutes.minusMinutes(5).format(formatter);
+		//フォーマッターを使いながら時間の誤差1分を表現
+		String hourPlusFive = nowDatePlasTenMinutes.plusMinutes(1).format(formatter);
+		String hourMinusFive = nowDatePlasTenMinutes.minusMinutes(1).format(formatter);
 		//曜日文字列に変換用リスト
 		List<String> dayOfWeekList = new ArrayList<>(Arrays.asList("月", "火", "水", "木", "金", "土", "日"));
 		System.out.println("dayOfWeek:" + dayOfWeekList.get(dayOfWeek) + "\nhour:" + hourPlusFive);

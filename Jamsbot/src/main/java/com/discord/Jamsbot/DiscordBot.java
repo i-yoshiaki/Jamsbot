@@ -56,7 +56,7 @@ public class DiscordBot extends ListenerAdapter {
 		// 定期実行スケジュール
 		scheduler.schedule("0 0 10 * *|0 0 20 * *|0 0 30 * *|0 0 L 2 *",
 				new task.MonsterStrikeDays(guild, PropertyManager.getProperties(BotConnectionPropertyKey.MONSTERSTRIKE_CHANNEL_ID.getKey())));
-		scheduler.schedule("20 * * * *|50 * * * *",
+		scheduler.schedule("5 * * * *|20 * * * *|35 * * * *|50 * * * *",
 				new task.BlackDesertBossTimer(guild, PropertyManager.getProperties(BotConnectionPropertyKey.BLACKDESERT_CHANNEL_ID.getKey())));
 		// start cron4j scheduler.
 		scheduler.start();
