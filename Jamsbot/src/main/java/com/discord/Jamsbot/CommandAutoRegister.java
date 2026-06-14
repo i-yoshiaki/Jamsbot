@@ -72,13 +72,84 @@ public class CommandAutoRegister {
 				Commands.slash("blackdeserttask", "黒い砂漠の定期通知on/off")
 						.addSubcommands(
 								new SubcommandData("on", "定期通知をonにする")
-									.addOption(OptionType.BOOLEAN, "is_event","イベントボスのみ",false),
+										.addOption(OptionType.BOOLEAN, "is_event", "イベントボスのみ", false),
 								new SubcommandData("off", "定期通知をoffにする"))
-						.setGuildOnly(true));
+						.setGuildOnly(true),
 
-		List<SlashCommandData> privateCommandList = List.of(
+				//splaschedule
+				Commands.slash("splaschedule", "スプラのスケジュール")
+						.addOptions(
+								new OptionData(OptionType.STRING, "rule", "スケジュールを確認したいルールを選択してください", true)
+										.addChoice("レギュラーマッチ", "regular")
+										.addChoice("バンカラマッチ(オープン)", "bankara-open")
+										.addChoice("バンカラマッチ(チャレンジ)", "bankara-challenge")
+										.addChoice("Xマッチ", "x")
+										.addChoice("フェスマッチ(オープン)", "fest")
+										.addChoice("フェスマッチ(チャレンジ)", "fest-challenge")
+										.addChoice("イベントマッチ", "event")
+										.addChoice("サーモンラン", "coop-grouping"))
+						.setGuildOnly(true),
 
+				//randomsplaweapon
+				Commands.slash("splarandomweapon", "条件を指定してランダムにブキを決めます")
+						.addOptions(
+								// === ブキカテゴリー（全12種） ===
+								new OptionData(OptionType.STRING, "type", "ブキのカテゴリー", false)
+										.addChoice("シューター", "シューター")
+										.addChoice("ブラスター", "ブラスター")
+										.addChoice("リールガン", "リールガン")
+										.addChoice("ローラー", "ローラー")
+										.addChoice("フデ", "フデ")
+										.addChoice("チャージャー", "チャージャー")
+										.addChoice("スロッシャー", "スロッシャー")
+										.addChoice("スピナー", "スピナー")
+										.addChoice("マニューバー", "マニューバー")
+										.addChoice("シェルター", "シェルター")
+										.addChoice("ストリンガー", "ストリンガー")
+										.addChoice("ワイパー", "ワイパー"),
+
+								// === サブウェポン（全14種） ===
+								new OptionData(OptionType.STRING, "sub", "サブウェポン", false)
+										.addChoice("スプラッシュボム", "スプラッシュボム")
+										.addChoice("キューバンボム", "キューバンボム")
+										.addChoice("クイックボム", "クイックボム")
+										.addChoice("カーリングボム", "カーリングボム")
+										.addChoice("ロボットボム", "ロボットボム")
+										.addChoice("トーピード", "トーピード")
+										.addChoice("タンサンボム", "タンサンボム")
+										.addChoice("スプラッシュシールド", "スプラッシュシールド")
+										.addChoice("ラインマーカー", "ラインマーカー")
+										.addChoice("ポイズンミスト", "ポイズンミスト")
+										.addChoice("トラップ", "トラップ")
+										.addChoice("ジャンプビーコン", "ジャンプビーコン")
+										.addChoice("ポイントセンサー", "ポイントセンサー")
+										.addChoice("スプリンクラー", "スプリンクラー"),
+
+								// === スペシャルウェポン（全18種） ===
+								new OptionData(OptionType.STRING, "special", "スペシャルウェポン", false)
+										.addChoice("ウルトラショット", "ウルトラショット")
+										.addChoice("メガホンレーザー5.1ch", "メガホンレーザー5.1ch")
+										.addChoice("トリプルトルネード", "トリプルトルネード")
+										.addChoice("カニタンク", "カニタンク")
+										.addChoice("サメライド", "サメライド")
+										.addChoice("ショクワンダー", "ショクワンダー")
+										.addChoice("マルチミサイル", "マルチミサイル")
+										.addChoice("アメフラシ", "アメフラシ")
+										.addChoice("ナイスダマ", "ナイスダマ")
+										.addChoice("ホップソナー", "ホップソナー")
+										.addChoice("キューインキ", "キューインキ")
+										.addChoice("グレートバリア", "グレートバリア")
+										.addChoice("エナジースタンド", "エナジースタンド")
+										.addChoice("デコイチラシ", "デコイチラシ")
+										.addChoice("テイオウイカ", "テイオウイカ")
+										.addChoice("スミナガシート", "スミナガシート")
+										.addChoice("ウルトラチャクチ", "ウルトラチャクチ")
+										.addChoice("ウルトラハンコ", "ウルトラハンコ"))
+						.setGuildOnly(true)
+		//List.ofの末カッコ	    
 		);
+
+		List<SlashCommandData> privateCommandList = List.of();
 
 		//グローバルコマンド初期化
 		//		jda.updateCommands().queue(
