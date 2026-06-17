@@ -37,49 +37,66 @@ public class splaschedule extends commandListenerAbstract {
                 .build();
 
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-            .thenAccept(response -> {
-                if (response.statusCode() != 200) {
-                    event.getHook().sendMessage("スケジュールの取得に失敗しました。(ステータスコード: " + response.statusCode() + ")").queue();
-                    return;
-                }
-
-                try {
-                    JsonObject jsonObject = JsonParser.parseString(response.body()).getAsJsonObject();
-                    JsonArray results = jsonObject.getAsJsonArray("results");
-
-                    if (results.size() < 2) {
-                        event.getHook().sendMessage("現在取得できるスケジュールデータがありません。").queue();
+                .thenAccept(response -> {
+                    if (response.statusCode() != 200) {
+                        event.getHook().sendMessage("スケジュールの取得に失敗しました。(ステータスコード: " + response.statusCode() + ")")
+                                .queue();
                         return;
                     }
 
-                    JsonObject now = results.get(0).getAsJsonObject();
-                    JsonObject next = results.get(1).getAsJsonObject();
-                    
-                    // ★ 選択されたルールに応じたテーマカラーを取得
-                    Color themeColor = getRuleColor(ruleParam);
+                    try {
+                        JsonObject jsonObject = JsonParser.parseString(response.body()).getAsJsonObject();
+                        JsonArray results = jsonObject.getAsJsonArray("results");
 
-                    if (ruleParam.equals("coop-grouping")) {
-                        // サーモンラン用
-                        EmbedBuilder nowEmbed = createSalmonEmbed("🐟 現在のシフト", now, themeColor);
-                        EmbedBuilder nextEmbed = createSalmonEmbed("⏭️ 次のシフト", next, themeColor);
-                        event.getHook().sendMessageEmbeds(nowEmbed.build(), nextEmbed.build()).queue();
-                    } else {
-                        // バトル用
-                        EmbedBuilder nowEmbed = createBattleEmbed("🟢 現在のスケジュール", now, themeColor);
-                        EmbedBuilder nextEmbed = createBattleEmbed("⏭️ 次のスケジュール", next, themeColor);
-                        event.getHook().sendMessageEmbeds(nowEmbed.build(), nextEmbed.build()).queue();
+                        if (results.size() < 2) {
+                            event.getHook().sendMessage("現在取得できるスケジュールデータがありません。").queue();
+                            return;
+                        }
+
+                        JsonObject now = results.get(0).getAsJsonObject();
+                        JsonObject next = results.get(1).getAsJsonObject();
+
+                        // ★ 選択されたルールに応じたテーマカラーを取得
+                        Color themeColor = getRuleColor(ruleParam);
+                        String ruleDisplayName = getRuleDisplayName(ruleParam);
+
+                        if (ruleParam.equals("coop-grouping")) {
+                            // サーモンラン用
+                            EmbedBuilder nowEmbed = createSalmonEmbed("現在", now, themeColor, ruleDisplayName);
+                            EmbedBuilder nextEmbed = createSalmonEmbed("次", next, themeColor, ruleDisplayName);
+                            event.getHook().sendMessageEmbeds(nowEmbed.build(), nextEmbed.build()).queue();
+                        } else {
+                            // バトル用
+                            EmbedBuilder nowEmbed = createBattleEmbed("現在", now, themeColor, ruleDisplayName);
+                            EmbedBuilder nextEmbed = createBattleEmbed("次", next, themeColor, ruleDisplayName);
+                            event.getHook().sendMessageEmbeds(nowEmbed.build(), nextEmbed.build()).queue();
+                        }
+
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        event.getHook().sendMessage("データの解析中にエラーが発生しました。").queue();
                     }
-
-                } catch (Exception ex) {
+                })
+                .exceptionally(ex -> {
                     ex.printStackTrace();
-                    event.getHook().sendMessage("データの解析中にエラーが発生しました。").queue();
-                }
-            })
-            .exceptionally(ex -> {
-                ex.printStackTrace();
-                event.getHook().sendMessage("APIとの通信中にエラーが発生しました。").queue();
-                return null;
-            });
+                    event.getHook().sendMessage("APIとの通信中にエラーが発生しました。").queue();
+                    return null;
+                });
+    }
+
+    // ====== ルールに応じて表示名を返すメソッド ======
+    private String getRuleDisplayName(String ruleParam) {
+        switch (ruleParam) {
+            case "regular": return "レギュラーマッチ";
+            case "bankara-open": return "バンカラマッチ (オープン)";
+            case "bankara-challenge": return "バンカラマッチ (チャレンジ)";
+            case "x": return "Xマッチ";
+            case "fest": return "フェスマッチ";
+            case "fest-challenge": return "フェスマッチ (チャレンジ)";
+            case "event": return "イベントマッチ";
+            case "coop-grouping": return "サーモンラン";
+            default: return ruleParam;
+        }
     }
 
     // ====== ルールに応じて色を返すメソッド ======
@@ -105,27 +122,31 @@ public class splaschedule extends commandListenerAbstract {
     }
 
     // ====== バトル系(レギュラーやバンカラ等)のEmbed作成メソッド ======
-    // 引数にColorを追加して色を動的に設定できるように変更
-    private EmbedBuilder createBattleEmbed(String titlePrefix, JsonObject schedule, Color color) {
+    // 引数にColorとruleDisplayNameを追加して動的に設定できるように変更
+    private EmbedBuilder createBattleEmbed(String timePrefix, JsonObject schedule, Color color, String ruleDisplayName) {
         EmbedBuilder embed = new EmbedBuilder();
-        
+
         String startTime = formatTime(schedule.get("start_time").getAsString());
         String endTime = formatTime(schedule.get("end_time").getAsString());
         String timeStr = startTime + " 〜 " + endTime;
 
         String ruleName = schedule.getAsJsonObject("rule").get("name").getAsString();
         JsonArray stages = schedule.getAsJsonArray("stages");
-        
+
         String stage1Name = stages.get(0).getAsJsonObject().get("name").getAsString();
         String stage1Image = stages.get(0).getAsJsonObject().get("image").getAsString();
         String stage2Name = stages.get(1).getAsJsonObject().get("name").getAsString();
         String stage2Image = stages.get(1).getAsJsonObject().get("image").getAsString();
 
-        embed.setTitle(titlePrefix + " (" + timeStr + ")");
+        embed.setTitle("【" + timePrefix + "】" + ruleDisplayName);
         embed.setColor(color); // ★ ここで取得した色をセット
-        embed.addField("ルール", ruleName, false);
-        embed.addField("ステージ", stage1Name + "\n" + stage2Name, false);
-        
+
+        StringBuilder desc = new StringBuilder();
+        desc.append("**時間**: ").append(timeStr).append("\n");
+        desc.append("**ルール**: ").append(ruleName).append("\n");
+        desc.append("**ステージ**: ").append(stage1Name).append(" / ").append(stage2Name);
+        embed.setDescription(desc.toString());
+
         embed.setImage(stage1Image);
         embed.setThumbnail(stage2Image);
 
@@ -133,10 +154,10 @@ public class splaschedule extends commandListenerAbstract {
     }
 
     // ====== サーモンラン専用のEmbed作成メソッド ======
-    // 引数にColorを追加して色を動的に設定できるように変更
-    private EmbedBuilder createSalmonEmbed(String titlePrefix, JsonObject schedule, Color color) {
+    // 引数にColorとruleDisplayNameを追加して動的に設定できるように変更
+    private EmbedBuilder createSalmonEmbed(String timePrefix, JsonObject schedule, Color color, String ruleDisplayName) {
         EmbedBuilder embed = new EmbedBuilder();
-        
+
         String startTime = formatTime(schedule.get("start_time").getAsString());
         String endTime = formatTime(schedule.get("end_time").getAsString());
         String timeStr = startTime + " 〜 " + endTime;
@@ -151,10 +172,15 @@ public class splaschedule extends commandListenerAbstract {
             weaponNames.append("・").append(w.getAsJsonObject().get("name").getAsString()).append("\n");
         }
 
-        embed.setTitle(titlePrefix + " (" + timeStr + ")");
+        embed.setTitle("【" + timePrefix + "】" + ruleDisplayName);
         embed.setColor(color); // ★ ここで取得した色をセット
-        embed.addField("ステージ", stageName, false);
-        embed.addField("支給ブキ", weaponNames.toString(), false);
+
+        StringBuilder desc = new StringBuilder();
+        desc.append("**時間**: ").append(timeStr).append("\n");
+        desc.append("**ステージ**: ").append(stageName).append("\n");
+        desc.append("**支給ブキ**:\n").append(weaponNames.toString());
+        embed.setDescription(desc.toString());
+
         embed.setImage(stageImage);
 
         return embed;
