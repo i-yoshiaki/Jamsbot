@@ -45,6 +45,10 @@ public class CommandAutoRegister {
 				//worldbosstimetable
 				Commands.slash("worldbosstimetable", "ワールドボス時間割")
 						.setGuildOnly(false),
+				// ito
+				Commands.slash("ito", "itoのゲームを開始します")
+						.addOptions(new OptionData(OptionType.INTEGER, "count", "一人あたりが引くカードの枚数（1〜5枚）", false).setMinValue(1).setMaxValue(5))
+						.setGuildOnly(false),
 				// gemini
 				//				Commands.slash("gemini", "geminiに質問できます。").addOption(OptionType.STRING, "text", "質問内容", true),
 

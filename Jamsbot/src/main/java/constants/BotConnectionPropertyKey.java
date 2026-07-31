@@ -7,7 +7,8 @@ public enum BotConnectionPropertyKey {
 	MAIN_CHANNEL_ID("asobiba.main.channel.id"),
 	MONSTERSTRIKE_CHANNEL_ID("asobiba.monsterstrike.channel.id"),
 	BLACKDESERT_CHANNEL_ID("asobiba.blackdesert.channel.id"),
-	SERVER_BATCHFILE_PATH("server.batchfile.path");
+	SERVER_BATCHFILE_PATH("server.batchfile.path"),
+	GEMINI_API_KEY("gemini.api.key");
 
 	private String key;
 

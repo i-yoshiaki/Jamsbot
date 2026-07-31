@@ -14,6 +14,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+
+        <!-- ▼ サーバーへのデプロイ情報（ご自身の環境に合わせて書き換えてください） ▼ -->
+        <deploy.user>user</deploy.user>
+        <deploy.host>192.168.10.97</deploy.host>
+        <deploy.path>D:\Bot</deploy.path>
     </properties>
     
     <dependencies>
@@ -73,6 +78,39 @@
         </resources>
 
         <plugins>
+            <!-- デフォルトのdeploy処理（Nexus等への登録）は不要なのでスキップ -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+
+            <!-- mvn deploy のタイミングで scp コマンドを実行してファイル転送 -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>deploy-to-server</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>scp</executable>
+                            <arguments>
+                                <argument>target/Jamsbot.tar.gz</argument>
+                                <argument>${deploy.user}@${deploy.host}:${deploy.path}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
