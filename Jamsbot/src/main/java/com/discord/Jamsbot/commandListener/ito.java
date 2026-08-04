@@ -31,6 +31,8 @@ public class ito extends commandListenerAbstract {
 					+ "参加するプレイヤーは下の「カードを引く」ボタンを押してください。")
 					.setActionRow(
 							Button.primary("ito_draw", "カードを引く"),
+							Button.success("ito_result", "結果発表"),
+							Button.secondary("ito_next", "ネクストゲーム"),
 							Button.danger("ito_end", "ゲーム終了")
 					)
 					.queue(message -> {

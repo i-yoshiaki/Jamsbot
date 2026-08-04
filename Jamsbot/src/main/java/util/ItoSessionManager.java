@@ -31,6 +31,16 @@ public class ItoSessionManager {
 		return session.drawCards(userId);
 	}
 
+	public static int getCardCount(String messageId) {
+		GameSession session = sessions.get(messageId);
+		return session != null ? session.cardCount : 0;
+	}
+
+	public static Map<String, List<Integer>> getAllUserCards(String messageId) {
+		GameSession session = sessions.get(messageId);
+		return session != null ? session.userCards : null;
+	}
+
 	private static class GameSession {
 		private final int cardCount;
 		private final Map<String, List<Integer>> userCards = new ConcurrentHashMap<>();
